@@ -1122,10 +1122,10 @@ jobs:
           check: false
       - make-package
       - run: mkdir -p build/
-      - run: docker tag determinedai/determined-master:${CIRCLE_SHA1}-amd64 determinedai/determined-master:${CIRCLE_SHA1}
-      - run: docker save -o build/master.image determinedai/determined-master:${CIRCLE_SHA1}
-      - run: docker tag determinedai/determined-agent:${CIRCLE_SHA1}-amd64 determinedai/determined-agent:${CIRCLE_SHA1}
-      - run: docker save -o build/agent.image determinedai/determined-agent:${CIRCLE_SHA1}
+      - run: docker tag determinedai/determined-ee-master:${CIRCLE_SHA1}-amd64 determinedai/determined-ee-master:${CIRCLE_SHA1}
+      - run: docker save -o build/master.image determinedai/determined-ee-master:${CIRCLE_SHA1}
+      - run: docker tag determinedai/determined-ee-agent:${CIRCLE_SHA1}-amd64 determinedai/determined-ee-agent:${CIRCLE_SHA1}
+      - run: docker save -o build/agent.image determinedai/determined-ee-agent:${CIRCLE_SHA1}
       - persist_to_workspace:
           root: .
           paths:
@@ -1158,20 +1158,6 @@ jobs:
       - make-package
       - run: tools/scripts/retry.sh make -C master publish-dev
       - run: tools/scripts/retry.sh make -C agent publish-dev
-      - run:
-          name: Build and publish model_hub docker images
-          command: |
-            if [ ${CIRCLE_BRANCH} = 'master' ] || [[ ${CIRCLE_BRANCH} == *"release-"* ]]; then
-                # For master and release branches, we will tag and publish both the environment
-                # with the git hash as well as the version.  This will make that image available
-                # immediately for nightly tests.
-                make -C model_hub build-docker
-                tools/scripts/retry.sh make -C model_hub publish-docker
-            else
-                # Otherwise, only tag and publish the environment with the git hash.
-                make -C model_hub build-docker-dev
-                tools/scripts/retry.sh make -C model_hub publish-docker-dev
-            fi
       - run: mkdir /tmp/pkgs && cp -v */dist/*.{rpm,deb,tar.gz} /tmp/pkgs
       - store_artifacts:
           path: /tmp/pkgs
@@ -1200,8 +1186,6 @@ jobs:
       - make-package
       - run: make -C master publish
       - run: make -C agent publish
-      - run: make -C model_hub build-docker
-      - run: tools/scripts/retry.sh make -C model_hub publish-docker
       - run: mkdir /tmp/pkgs && cp -v */dist/*.{rpm,deb,tar.gz} /tmp/pkgs
       - store_artifacts:
           path: /tmp/pkgs
@@ -1233,8 +1217,6 @@ jobs:
       - run:
           no_output_timeout: 30m
           command: make -C agent release
-      - run: make -C model_hub build-docker
-      - run: make -C model_hub publish-docker
       - run: mkdir /tmp/pkgs && cp -v */dist/*.{rpm,deb,tar.gz} /tmp/pkgs
       - store_artifacts:
           path: /tmp/pkgs
@@ -1329,8 +1311,8 @@ jobs:
       - skip-if-webui-only
       - attach_workspace:
           at: .
-      - run: sudo apt-get install -y $(pwd)/master/dist/determined-master*.deb
-      - run: sudo apt-get install -y $(pwd)/agent/dist/determined-agent*.deb
+      - run: sudo apt-get install -y $(pwd)/master/dist/determined-ee-master*.deb
+      - run: sudo apt-get install -y $(pwd)/agent/dist/determined-ee-agent*.deb
       - run: sudo cp .circleci/packaging/master.yaml /etc/determined/master.yaml
       - run: sudo cp .circleci/packaging/agent.yaml /etc/determined/agent.yaml
       - setup-python-venv:
@@ -2309,18 +2291,6 @@ workflows:
             - build-react
             - build-docs
 
-      - package-and-push-system-dev:
-          requires:
-            - build-react
-            - build-docs
-          filters: *any-upstream
-
-      - scrape-docs:
-          requires:
-            - build-docs
-          context: determined-production
-          filters: *main-and-release-and-rc-filters
-
       - test-debian-packaging:
           requires:
             - package-and-push-system-local
@@ -3104,7 +3074,7 @@ workflows:
           requires:
             - build-react
             - build-docs
-          context: determined-production
+          context: determined-ee
           filters: *rc-filters
 
       - publish-python-package:
@@ -3112,7 +3082,7 @@ workflows:
           matrix:
             parameters:
               path: ["harness", "common", "cli", "deploy", "model_hub"]
-          context: determined-production
+          context: determined-ee
           filters: *rc-filters
           requires:
             - package-and-push-system-rc
@@ -3121,7 +3091,7 @@ workflows:
           requires:
             - build-react
             - build-docs
-          context: determined-production
+          context: determined-ee
           filters: *release-filters
 
       - publish-python-package:
@@ -3129,7 +3099,7 @@ workflows:
           matrix:
             parameters:
               path: ["harness", "common", "cli", "deploy", "model_hub"]
-          context: determined-production
+          context: determined-ee
           filters: *release-filters
           requires:
             - package-and-push-system-release
@@ -3149,9 +3119,5 @@ workflows:
       - publish-helm-gh:
           requires:
             - build-helm
-          context: determined-production
-          filters: *release-filters
-
-      - upload-try-now-template:
           context: determined-production
           filters: *release-filters
