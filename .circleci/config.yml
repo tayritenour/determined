@@ -3076,7 +3076,7 @@ workflows:
           name: publish-python-package-rc
           matrix:
             parameters:
-              path: ["harness", "common", "cli", "deploy", "model_hub"]
+              path: ["harness", "common", "cli", "deploy"]
           context: determined-ee
           filters: *rc-filters
           requires:
@@ -3093,7 +3093,7 @@ workflows:
           name: publish-python-package-release
           matrix:
             parameters:
-              path: ["harness", "common", "cli", "deploy", "model_hub"]
+              path: ["harness", "common", "cli", "deploy"]
           context: determined-ee
           filters: *release-filters
           requires:
