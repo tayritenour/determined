@@ -39,6 +39,10 @@ build/examples.stamp: ../examples/build/stamp ../model_hub/build-examples/stamp
 attributions.rst: $(shell find ../tools/scripts/licenses -type f)
 	../tools/scripts/gen-attributions.py sphinx $@
 
+.PHONY: rebrand
+rebrand:
+	python rebrand-docs.py . .
+
 build/sp-%.stamp: $(SPHINXWRAPPER) conf.py attributions.rst $(shell find . -name site -prune -o -type f \( -name '*.rst' -o -name '*.html' -o -name '*.css' \) -print) $(shell find assets -type f) $(shell find _templates -type f)
 	@$(SPHINXWRAPPER) $(SPHINXBUILD) -M $* . site $(SPHINXOPTS)
 	mkdir -p build
