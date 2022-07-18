@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"net/url"
 	"time"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -16,9 +15,7 @@ import (
 	"github.com/determined-ai/determined/master/internal/cluster"
 	"github.com/determined-ai/determined/master/internal/config"
 	"github.com/determined-ai/determined/master/internal/grpcutil"
-	"github.com/determined-ai/determined/master/internal/oidc"
 	"github.com/determined-ai/determined/master/internal/plugin/sso"
-	"github.com/determined-ai/determined/master/internal/saml"
 	"github.com/determined-ai/determined/master/pkg/logger"
 	"github.com/determined-ai/determined/master/version"
 	"github.com/determined-ai/determined/proto/pkg/apiv1"
