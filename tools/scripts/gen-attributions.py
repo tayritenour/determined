@@ -12,6 +12,7 @@ where BUILD_TYPE is one of:
     sphix   -- generate an ReST file for the sphinx documentation
     master  -- generate a debian copyright file for determined-master
     agent   -- generate a debian copyright file for determined-agent
+    slurm   -- generate a debian copyright file for determined-launcher
 """
 
 import email
@@ -23,8 +24,15 @@ known_licenses = {
     "apache2": "Apache-2.0",
     "bsd2": "BSD 2-clause",
     "bsd3": "BSD 3-clause",
+    "cc0": "Creative Commons",
+    "cddl": "Common Development and Distribution License",
+    "edl": "Eclipse Distribution License",
+    "epl": "Eclipse Public License",
+    "epl2": "Eclipse Public License v2",
+    "lgpl2": "Lesser GPL v2.1",
     "mit": "MIT",
     "mozilla": "Mozilla Public License",
+    "mpl2": "Mozilla Public License Version 2.0",
     "sil": "SIL Open Font License 1.1",
     "unlicense": "Unlicense",
 }
@@ -54,6 +62,7 @@ class License:
         master: str = "false",
         agent: str = "false",
         webui: str = "false",
+        slurm: str = "false",
     ) -> None:
         assert text.strip(), "License text not found"
         assert name is not None, "a Name header is required"
@@ -62,6 +71,7 @@ class License:
         assert master.lower() in {"true", "false"}, "Master must be true or false"
         assert agent.lower() in {"true", "false"}, "Agent must be true or false"
         assert webui.lower() in {"true", "false"}, "Webui must be true or false"
+        assert slurm.lower() in {"true", "false"}, "Slurm must be true or false"
 
         self.tag = tag
         self.text = text
@@ -70,6 +80,7 @@ class License:
         self.master = master.lower() == "true"
         self.agent = agent.lower() == "true"
         self.webui = webui.lower() == "true"
+        self.slurm = slurm.lower() == "true"
 
     @classmethod
     def from_file(cls, tag: str, f: IO[str]) -> "License":
@@ -176,6 +187,8 @@ def build_sphinx(licenses: List[License]) -> str:
         gen_sphinx_table([license for license in licenses if license.master]),
         sphinx_format_header("Determined Agent", "*"),
         gen_sphinx_table([license for license in licenses if license.agent]),
+        sphinx_format_header("Determined Slurm Launcher", "*"),
+        gen_sphinx_table([license for license in licenses if license.slurm]),
     ]
 
     for license in licenses:
@@ -214,7 +227,7 @@ def read_dir(path: str) -> List[License]:
 
 
 def main(build_type: str, path_out: Optional[str]) -> int:
-    if build_type not in ("master", "agent", "sphinx"):
+    if build_type not in ("master", "agent", "sphinx", "slurm"):
         print(__doc__, file=sys.stderr)
         return 1
 
@@ -230,6 +243,8 @@ def main(build_type: str, path_out: Optional[str]) -> int:
         )
     elif sys.argv[1] == "agent":
         gen = build_ascii([license for license in licenses if license.agent], our_license_path)
+    elif sys.argv[1] == "slurm":
+        gen = build_ascii([license for license in licenses if license.slurm], our_license_path)
 
     gen = post_process(gen)
 
