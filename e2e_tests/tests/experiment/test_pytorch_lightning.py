@@ -5,6 +5,7 @@ from tests import experiment as exp
 
 
 @pytest.mark.e2e_cpu
+@pytest.mark.e2e_slurm
 def test_pl_mnist() -> None:
     exp_dir = "mnist_pl"
     config = conf.load_config(conf.cv_examples_path(exp_dir + "/const.yaml"))
@@ -15,6 +16,7 @@ def test_pl_mnist() -> None:
 
 
 @pytest.mark.e2e_cpu
+@pytest.mark.e2e_slurm
 def test_pl_mnist_gan() -> None:
     exp_dir = "gan_mnist_pl"
     config = conf.load_config(conf.gan_examples_path(exp_dir + "/const.yaml"))
