@@ -3,6 +3,7 @@ package rbac
 import (
 	"context"
 
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 
 	"github.com/determined-ai/determined/master/pkg/model"
@@ -36,3 +37,10 @@ type RBACAPIServer interface {
 		ctx context.Context, idb bun.IDB, workspaceID int, userID model.UserID,
 	) error
 }
+
+var (
+	// ErrorAccessDenied is the error returned when a user does not have access to a resource.
+	ErrorAccessDenied = errors.New("access denied")
+	// ErrorLookup is the error returned when a user's permissions couldn't be looked up.
+	ErrorLookup = errors.New("error looking up user's permissions")
+)
