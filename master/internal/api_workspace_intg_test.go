@@ -18,12 +18,14 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
+	"github.com/determined-ai/determined/master/internal/config"
 	"github.com/determined-ai/determined/master/internal/db"
 	"github.com/determined-ai/determined/master/internal/mocks"
 	"github.com/determined-ai/determined/master/internal/workspace"
 	"github.com/determined-ai/determined/master/pkg/model"
 	"github.com/determined-ai/determined/proto/pkg/apiv1"
 	"github.com/determined-ai/determined/proto/pkg/projectv1"
+	"github.com/determined-ai/determined/proto/pkg/rbacv1"
 	"github.com/determined-ai/determined/proto/pkg/workspacev1"
 )
 
@@ -180,6 +182,51 @@ func TestPatchWorkspace(t *testing.T) {
 }
 
 var wAuthZ *mocks.WorkspaceAuthZ
+
+func TestPostWorkspaceRBACWorkspaceAdminAssigned(t *testing.T) {
+	api, _, ctx := SetupAPITest(t)
+
+	for _, enabled := range []bool{true, false} {
+		for _, id := range []int{2, 5} {
+			config.GetMasterConfig().Security.AuthZ.AssignWorkspaceCreator.RoleID = id
+			config.GetMasterConfig().Security.AuthZ.AssignWorkspaceCreator.Enabled = enabled
+
+			// Create workspace.
+			workspaceName := uuid.New().String()
+			wresp, err := api.PostWorkspace(ctx, &apiv1.PostWorkspaceRequest{Name: workspaceName})
+			require.NoError(t, err)
+
+			// Did workspace admin get assigned to the scope?
+			resp, err := api.GetPermissionsSummary(ctx, &apiv1.GetPermissionsSummaryRequest{})
+			require.NoError(t, err)
+
+			var role *rbacv1.Role
+			for _, r := range resp.Roles {
+				if int(r.RoleId) == id {
+					role = r
+					break
+				}
+			}
+			require.NotNilf(t, role, "did not find roleID in MyPermissions", id)
+
+			shouldFail := true
+			for _, assign := range resp.Assignments {
+				if assign.RoleId == role.RoleId {
+					if enabled {
+						require.Contains(t, assign.ScopeWorkspaceIds, wresp.Workspace.Id)
+					} else {
+						require.NotContains(t, assign.ScopeWorkspaceIds, wresp.Workspace.Id)
+					}
+					shouldFail = false
+				}
+			}
+
+			if shouldFail {
+				require.Fail(t, "did not find workspace admin in assignments")
+			}
+		}
+	}
+}
 
 func workspaceNotFoundErr(id int) error {
 	return status.Errorf(codes.NotFound, fmt.Sprintf("workspace (%d) not found", id))
