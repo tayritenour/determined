@@ -250,7 +250,7 @@ def master_up(
         )
         volumes = [f"{os.path.abspath(master_config_path)}:/etc/determined/master.yaml"]
         client.containers.run(
-            image=f"{image_repo_prefix}/determined-master:{version}",
+            image=f"{image_repo_prefix}/hpe-mlde-master:{version}",
             environment=env,
             init=True,
             mounts=[],
@@ -450,7 +450,7 @@ def agent_up(
         master_host = get_proxy_addr()
     environment["DET_MASTER_HOST"] = master_host
 
-    image = f"{image_repo_prefix}/determined-agent:{version}"
+    image = f"{image_repo_prefix}/hpe-mlde-agent:{version}"
     init = True
     mounts = []  # type: List[str]
     if labels is None:
