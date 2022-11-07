@@ -142,6 +142,7 @@ def test_tf_keras_single_gpu(tf2: bool, collect_trial_profiles: Callable[[int], 
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.tensorflow2
 def test_tf_keras_mnist_parallel(collect_trial_profiles: Callable[[int], None]) -> None:
     config = conf.load_config(conf.tutorials_path("fashion_mnist_tf_keras/const.yaml"))
@@ -181,6 +182,7 @@ def test_tf_keras_tf2_disabled(collect_trial_profiles: Callable[[int], None]) ->
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.tensorflow2
 def run_tf_keras_dcgan_example(collect_trial_profiles: Callable[[int], None]) -> None:
     config = conf.load_config(conf.gan_examples_path("dcgan_tf_keras/const.yaml"))

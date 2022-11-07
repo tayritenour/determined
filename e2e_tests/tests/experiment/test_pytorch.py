@@ -129,6 +129,7 @@ def test_pytorch_const_warm_start(image_type: str) -> None:
 
 
 @pytest.mark.e2e_gpu
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.gpu_required
 @pytest.mark.parametrize("api_style", ["apex", "auto", "manual"])
 def test_pytorch_const_with_amp(
@@ -146,6 +147,7 @@ def test_pytorch_const_with_amp(
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.parametrize("image_type", ["PT", "TF2"])
 def test_pytorch_cifar10_parallel(
     image_type: str, collect_trial_profiles: Callable[[int], None]
@@ -170,6 +172,7 @@ def test_pytorch_cifar10_parallel(
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.parametrize("image_type", ["PT", "TF2"])
 def test_pytorch_gan_parallel(
     image_type: str, collect_trial_profiles: Callable[[int], None]
@@ -194,6 +197,7 @@ def test_pytorch_gan_parallel(
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 def test_pytorch_gradient_aggregation() -> None:
     config = conf.load_config(conf.fixtures_path("pytorch_identity/distributed.yaml"))
 
@@ -247,6 +251,7 @@ def test_pytorch_gradient_aggregation() -> None:
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 def test_pytorch_parallel() -> None:
     config = conf.load_config(conf.tutorials_path("mnist_pytorch/const.yaml"))
     config = conf.set_slots_per_trial(config, 8)
@@ -275,6 +280,7 @@ def test_pytorch_parallel() -> None:
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 def test_distributed_logging() -> None:
     config = conf.load_config(conf.fixtures_path("pytorch_no_op/const.yaml"))
     config = conf.set_slots_per_trial(config, 8)
@@ -290,6 +296,7 @@ def test_distributed_logging() -> None:
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.parametrize("num_workers,global_batch_size,dataset_len", [(2, 2, 2), (2, 2, 3)])
 def test_epoch_sync(num_workers: int, global_batch_size: int, dataset_len: int) -> None:
     """

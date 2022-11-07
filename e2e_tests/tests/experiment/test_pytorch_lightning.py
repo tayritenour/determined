@@ -27,6 +27,7 @@ def test_pl_mnist_gan() -> None:
 
 
 @pytest.mark.e2e_gpu
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.gpu_required
 @pytest.mark.parametrize("api_style", ["apex", "auto"])
 def test_pl_const_with_amp(api_style: str) -> None:

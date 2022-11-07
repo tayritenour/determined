@@ -7,6 +7,7 @@ from tests import experiment as exp
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.tensorflow2
 @pytest.mark.parametrize("tf2", [False, True])
 def test_mnist_estimator_const_parallel(tf2: bool) -> None:
@@ -84,6 +85,7 @@ def test_custom_reducer_distributed(secrets: Dict[str, str], tf2: bool) -> None:
 
 
 @pytest.mark.parallel
+@pytest.mark.e2e_slurm_gpu
 @pytest.mark.tensorflow2
 def test_on_trial_close_callback() -> None:
     config = conf.load_config(conf.fixtures_path("estimator_no_op/const.yaml"))

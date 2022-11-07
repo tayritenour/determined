@@ -400,6 +400,7 @@ def test_pytorch_cpu_rng_restore() -> None:
 
 
 @pytest.mark.e2e_gpu
+@pytest.mark.e2e_slurm_gpu
 def test_pytorch_gpu_rng_restore() -> None:
     # Disable rand_rand test because tensorboard async uploading can mess with random state
     # in unexpected way.
