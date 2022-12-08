@@ -70,6 +70,7 @@ var unauthenticatedPointsList = []string{
 var adminAuthPointsList = []string{
 	"/config",
 	"/agents/.*/slots/.*",
+	"/oauth2/clients(/.*)?",
 }
 
 var unauthenticatedPointsPattern = regexp.MustCompile("^" +
