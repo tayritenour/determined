@@ -184,7 +184,7 @@ func TestPatchWorkspace(t *testing.T) {
 var wAuthZ *mocks.WorkspaceAuthZ
 
 func TestPostWorkspaceRBACWorkspaceAdminAssigned(t *testing.T) {
-	api, _, ctx := setupAPITest(t)
+	api, _, ctx := setupAPITest(t, nil)
 
 	for _, enabled := range []bool{true, false} {
 		for _, id := range []int{2, 5} {
