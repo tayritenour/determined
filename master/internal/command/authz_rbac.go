@@ -3,15 +3,21 @@ package command
 import (
 	"context"
 
+	"github.com/determined-ai/determined/master/internal/rbac/audit"
 	"github.com/determined-ai/determined/master/pkg/model"
 )
 
 // NSCAuthZRBAC is the RBAC implementation of the NSCAuthZ interface.
 type NSCAuthZRBAC struct{}
 
-// CanGetNSC returns true and nil error unless the developer master config option
-// security.authz._strict_ntsc_enabled is true then it returns a boolean if the user is
-// an admin or if the user owns the task and a nil error.
+// SupplyEntityID augments a context's log fields with the entity ID.
+func SupplyEntityID(ctx context.Context, id interface{}) context.Context {
+	logFields := audit.ExtractLogFields(ctx)
+	logFields[audit.EntityIDKey] = id
+	return context.WithValue(ctx, audit.LogKey{}, logFields)
+}
+
+// CanGetNSC always returns a nil error.
 func (a *NSCAuthZRBAC) CanGetNSC(
 	ctx context.Context, curUser model.User, workspaceID model.AccessScopeID,
 ) (canGetCmd bool, err error) {

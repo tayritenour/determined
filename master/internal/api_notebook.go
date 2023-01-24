@@ -96,6 +96,7 @@ func (a *apiServer) GetNotebook(
 		return nil, err
 	}
 
+	ctx = command.SupplyEntityID(ctx, req.NotebookId)
 	if ok, err := command.AuthZProvider.Get().CanGetNSC(
 		ctx, *curUser, model.AccessScopeID(resp.Notebook.WorkspaceId),
 	); err != nil {
@@ -117,6 +118,7 @@ func (a *apiServer) validateToKillNotebook(ctx context.Context, notebookID strin
 		return err
 	}
 
+	ctx = command.SupplyEntityID(ctx, notebookID)
 	err = command.AuthZProvider.Get().CanTerminateNSC(
 		ctx, *curUser, model.AccessScopeID(targetNotebook.Notebook.WorkspaceId),
 	)
@@ -156,6 +158,7 @@ func (a *apiServer) SetNotebookPriority(
 		return nil, err
 	}
 
+	ctx = command.SupplyEntityID(ctx, req.NotebookId)
 	err = command.AuthZProvider.Get().CanSetNSCsPriority(
 		ctx, *curUser, model.AccessScopeID(targetNotebook.Notebook.WorkspaceId), int(req.Priority),
 	)

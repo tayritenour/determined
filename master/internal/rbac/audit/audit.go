@@ -12,6 +12,9 @@ import (
 // LogKey is the key used to store and extract logrus fields from context.
 type LogKey struct{}
 
+// EntityIDKey is the key used to store and extract entity IDs from log fields.
+const EntityIDKey = "entityID"
+
 // PermissionWithSubject contains the permission and what subject requires it.
 type PermissionWithSubject struct {
 	PermissionTypes []rbacv1.PermissionType

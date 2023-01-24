@@ -122,6 +122,7 @@ func (a *apiServer) GetTensorboard(
 		return nil, err
 	}
 
+	ctx = command.SupplyEntityID(ctx, req.TensorboardId)
 	if ok, err := command.AuthZProvider.Get().CanGetTensorboard(
 		ctx, *curUser, model.AccessScopeID(resp.Tensorboard.WorkspaceId),
 		resp.Tensorboard.ExperimentIds, resp.Tensorboard.TrialIds); err != nil {
@@ -152,6 +153,7 @@ func (a *apiServer) KillTensorboard(
 		return nil, err
 	}
 
+	ctx = command.SupplyEntityID(ctx, req.TensorboardId)
 	err = command.AuthZProvider.Get().CanTerminateTensorboard(
 		ctx, *curUser, model.AccessScopeID(getResponse.Tensorboard.WorkspaceId))
 	if err != nil {
@@ -181,6 +183,7 @@ func (a *apiServer) SetTensorboardPriority(
 		return nil, err
 	}
 
+	ctx = command.SupplyEntityID(ctx, req.TensorboardId)
 	err = command.AuthZProvider.Get().CanSetNSCsPriority(
 		ctx, *curUser, model.AccessScopeID(getResponse.Tensorboard.WorkspaceId), int(req.Priority))
 	if err != nil {
