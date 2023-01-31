@@ -35,6 +35,7 @@ _INTEG_MARKERS = {
     "det_deploy_local",
     "stress_test",
     "test_oauth",
+    "test_model_registry_rbac",
     "distributed",
     "parallel",
     "nightly",
