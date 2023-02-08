@@ -266,7 +266,7 @@ func (a *NSCAuthZRBAC) CanGetTensorboard(
 	ctx context.Context, curUser model.User, workspaceID model.AccessScopeID,
 	experimentIDs []int32, trialIDs []int32,
 ) (canGetTensorboards bool, serverError error) {
-	workspaceIDs := []model.AccessScopeID{workspaceID}
+	var workspaceIDs []model.AccessScopeID
 
 	expToWorkspaceIDs, err := db.ExperimentIDsToWorkspaceIDs(ctx, experimentIDs)
 	if err != nil {
@@ -280,10 +280,17 @@ func (a *NSCAuthZRBAC) CanGetTensorboard(
 	workspaceIDs = append(workspaceIDs, expToWorkspaceIDs...)
 	workspaceIDs = append(workspaceIDs, trialsToWorkspaceIDs...)
 
+	if len(workspaceIDs) == 0 {
+		return true, nil
+	}
+
 	accessDenied, err := a.checkForPermissions(ctx, curUser,
 		workspaceIDs, rbacv1.PermissionType_PERMISSION_TYPE_VIEW_EXPERIMENT_ARTIFACTS)
 
-	return accessDenied == nil, err
+	if accessDenied != nil {
+		return false, nil
+	}
+	return true, err
 }
 
 // CanTerminateTensorboard always returns nil.
