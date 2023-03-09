@@ -13,12 +13,10 @@ import (
 	"strings"
 	"time"
 
+	petname "github.com/dustinkirkland/golang-petname"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	petname "github.com/dustinkirkland/golang-petname"
-
-	"github.com/pkg/errors"
 
 	k8sV1 "k8s.io/api/core/v1"
 
