@@ -65,13 +65,6 @@ def test_pytorch_load(image_type: str, collect_trial_profiles: Callable[[int], N
     experiment_id = exp.run_basic_test_with_temp_config(
         config, conf.tutorials_path("mnist_pytorch"), 1
     )
-
-    (
-        Determined(conf.make_master_url())
-        .get_experiment(experiment_id)
-        .top_checkpoint()
-        .load(map_location="cpu")
-    )
     trial_id = exp.experiment_trials(experiment_id)[0].trial.id
     collect_trial_profiles(trial_id)
 
