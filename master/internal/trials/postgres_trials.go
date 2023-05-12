@@ -384,17 +384,19 @@ func MetricsTimeSeries(trialID int32, startTime time.Time,
 		return metricMeasurements, errors.Wrapf(err, "failed to get metrics to sample for experiment")
 	}
 
-	selectMetrics := map[string]bool{}
+	// Maps the metric name returned by postgres to the original metric name
+	metricsMap := map[string]string{}
 
 	for i := range metricNames {
-		selectMetrics[metricNames[i]] = true
+		metricsMap[strings.ToLower(metricNames[i])] = metricNames[i]
 	}
 
 	for i := range results {
 		valuesMap := make(map[string]interface{})
 		for mName, mVal := range results[i] {
-			if selectMetrics[mName] {
-				valuesMap[mName] = mVal
+			origMetricName, ok := metricsMap[mName]
+			if ok {
+				valuesMap[origMetricName] = mVal
 			}
 		}
 		epoch := new(int32)
