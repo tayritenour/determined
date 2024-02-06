@@ -343,7 +343,7 @@ resourcePools:
 ## Configure GenAI Deployment
 genai:
   ## Version of GenAI to use. If unset, GenAI will not be deployed
-  version: "latest"
+  # version: "release"
   
   ## Port for GenAI to use
   port: 9011
@@ -378,6 +378,11 @@ genai:
     ## Size of the generated PVC
     storageSize: 100Gi
 
+  ## Extra Resource Pool Metadata is hardcoded information about the
+  ## GPUs available to the resource pools. This information
+  ## is not provided in k8s so we provide it directly.
+  ## Note: All resource pools defined here need to also be reflected in
+  ## the .Values.resourcePools.
   extra_resource_pool_metadata:
     a100:
       gpu_type: A100
